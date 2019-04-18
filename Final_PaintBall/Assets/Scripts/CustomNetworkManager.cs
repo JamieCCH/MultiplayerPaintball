@@ -54,22 +54,7 @@ public class CustomNetworkManager : NetworkManager {
     {
         base.OnServerConnect(conn);
         Debug.Log("OnServerConnect");
-
-        //gameManager.GetComponent<GameManager>().playerCount++;
-        //Debug.Log("server count connection: "+ gameManager.GetComponent<GameManager>().playerCount);
-
-        //Debug.Log("colorLis" + colorList.Count);
-        //gameManager = GameObject.Find("GameManager");
-
-        //if (currentPlayerNum < maxPlayerNum)
-        //{
-            gameManager.GetComponent<GameManager>().m_joinButton.gameObject.SetActive(true);
-        //}
-        //else
-        //{
-            //gameManager.GetComponent<GameManager>().panel.SetActive(true);
-            //gameManager.GetComponent<GameManager>().gameFullPanel.SetActive(true);
-        //}
+        gameManager.GetComponent<GameManager>().m_joinButton.gameObject.SetActive(true);
     }
 
     public override void OnClientConnect(NetworkConnection conn)
@@ -107,17 +92,23 @@ public class CustomNetworkManager : NetworkManager {
 
         if (currentPlayerNum <= maxPlayerNum)
         {
+            isGamefull = false;
             GameObject player = (GameObject)Instantiate(playerPrefab, pos,transform.rotation);
             player.GetComponent<PlayerController>().m_startingColour = colorList[0];
             //player.GetComponent<PlayerController>().m_score = PlayerScore[colorList[0]];
             colorList.RemoveAt(0);
             NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
             //player.GetComponent<PlayerController>().scoreTxt.text = "Score: " + PlayerScore[colorList[0]];
-            gameManager.GetComponent<GameManager>().RpcSetPlayerNum();
+            gameManager.GetComponent<GameManager>().RpcCheckPlayerNum();
         }
         else
         {
             isGamefull = true;
+        }
+
+        if (currentPlayerNum == maxPlayerNum)
+        {
+            gameManager.GetComponent<GameManager>().RpcCountdown();
         }
 
         var playerCounts = gameManager.GetComponent<GameManager>().playerNum;
@@ -125,9 +116,10 @@ public class CustomNetworkManager : NetworkManager {
 
         if (isGamefull && playerCounts == 1)
         {
-            print("full");
             gameManager.GetComponent<GameManager>().RpcGameFullNotif();
         }
+
+       
     }
     
 }

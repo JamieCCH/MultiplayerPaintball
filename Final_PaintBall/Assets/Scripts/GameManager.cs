@@ -9,32 +9,29 @@ public class GameManager : NetworkBehaviour{
     public Button m_joinButton;
     public GameObject panel;
     public GameObject gameFullPanel;
+    public GameObject countdownPanel;
+    public Camera lobbyCamera;
+    //private GameObject[] playerCamera;
 
-    //[SyncVar]
+    GameObject[] pc;
+    public Text counter;
+    int timer = 3;
+
+    GameObject player;
+
     public int playerNum = 0;
 
     void Start()
     {
         m_joinButton.onClick.AddListener(AddPlayer);
-        //panel = GameObject.Find("StartPanel");
+        Time.timeScale = 1;
     }
 
     void AddPlayer()
     {
         ClientScene.AddPlayer(0);
-        //m_joinButton.gameObject.SetActive(false);
         panel.SetActive(false);
     }
-
-    //void CheckPlayerCount()
-    //{
-    //    if (playerCount > 1)
-    //    {
-    //        print("playerCount>=3");
-    //        panel.SetActive(true);
-    //        gameFullPanel.SetActive(true);
-    //    }
-    //}
 
     [ClientRpc]
     public void RpcGameFullNotif()
@@ -47,38 +44,50 @@ public class GameManager : NetworkBehaviour{
     }
 
     [ClientRpc]
-    public void RpcSetPlayerNum()
+    public void RpcCheckPlayerNum()
     {
         playerNum = 1;
     }
 
+    IEnumerator Countdown()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1);
+            timer--;
+        }
+    }
 
-    //[ClientRpc]
-    //void RpcCheckPlayer()
-    //{
-    //    //local
-    //    CheckPlayerCount();
-    //}
+    [ClientRpc]
+    public void RpcCountdown()
+    {
+        countdownPanel.SetActive(true);
+        StartCoroutine("Countdown");
+    }
 
-    //[Command]
-    //void CmdCheckPlayer()
-    //{
-    //    //local
-    //    CheckPlayerCount();
-    //    //broadcast
-    //    //RpcCheckPlayer();
-    //}
+ 
+    void SetCanMove()
+    {
+        pc = GameObject.FindGameObjectsWithTag("Player");
+        for (var i = 0; i < pc.Length; i++)
+        {
+            pc[i].GetComponent<PlayerController>().m_callMove = true;
+            pc[i].GetComponent<PlayerController>().m_isLocalCamera = true;
+        }
+    }
 
 
     private void Update()
     {
-        //print("local "+isLocalPlayer);
-       
-        //if (!isServer)
-        //{
-        //    CheckPlayerCount();
-        //}
-        //RpcCheckPlayer();
-        //CheckPlayerCount();
+        counter.text = ("" + timer);
+
+        if (timer <= 0)
+        {
+            countdownPanel.SetActive(false);
+            SetCanMove();
+        }
     }
+
+
+
 }

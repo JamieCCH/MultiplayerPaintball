@@ -12,6 +12,8 @@ public class PlayerController : NetworkBehaviour {
 
     public bool m_canAttack = false;
     public bool m_colorchanged = false;
+    public bool m_callMove = false;
+    public bool m_isLocalCamera = false;
 
     //private int score = 0;
 
@@ -26,6 +28,7 @@ public class PlayerController : NetworkBehaviour {
     public GameObject m_bullet = null;
     public GameObject pickup = null;
     public Text scoreTxt = null;
+    public Camera playerCamera = null;
 
     private Dictionary<Color, int> PlayerScore;
 
@@ -35,6 +38,8 @@ public class PlayerController : NetworkBehaviour {
 
     void Start()
     {
+        //playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Camera>();
+        playerCamera.enabled = false;
         m_rb = GetComponent<Rigidbody>();
         //ChangeColor();
         GetComponent<Renderer>().material.color = m_startingColour;
@@ -98,7 +103,7 @@ public class PlayerController : NetworkBehaviour {
     {
         //local
         ChangeColor(c);
-        //broadcast attack
+        //broadcast
         RpcColor(c);
     }
 
@@ -173,7 +178,6 @@ public class PlayerController : NetworkBehaviour {
         RpcAttack();
     }
 
-
     //striclty for replicas
     void ReplicaUpdate()
     {
@@ -205,15 +209,25 @@ public class PlayerController : NetworkBehaviour {
         UpdateAttack();
         UpdateColor();
 
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
+        if (m_callMove)
+        {
+            float moveHorizontal = Input.GetAxis("Horizontal");
+            float moveVertical = Input.GetAxis("Vertical");
 
-        Vector3 forward = moveVertical * transform.forward * m_speed;
-        Vector3 strafe = moveHorizontal * transform.right * m_speed;
-        m_rb.velocity = forward + strafe;
+            Vector3 forward = moveVertical * transform.forward * m_speed;
+            Vector3 strafe = moveHorizontal * transform.right * m_speed;
+            m_rb.velocity = forward + strafe;
 
-        Vector3 movement = new Vector3(moveHorizontal, 0.0f, 1.0f);
-        transform.rotation = Quaternion.LookRotation(movement);
+            //Vector3 movement = new Vector3(moveHorizontal, 0.0f, 1.0f);
+            //transform.rotation = Quaternion.LookRotation(movement);
+        }
+
+        if(m_isLocalCamera)
+        {
+            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = false;
+            playerCamera.enabled = true;
+        }
+
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -232,7 +246,7 @@ public class PlayerController : NetworkBehaviour {
             //ChangeColor(col);
             CmdColor(col);
             CmdAddScore(col);
-            //Destroy(collision.gameObject);
+            Destroy(collision.gameObject);
         }
     }
 }
