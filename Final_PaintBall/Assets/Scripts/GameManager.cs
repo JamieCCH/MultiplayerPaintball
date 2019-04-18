@@ -10,14 +10,15 @@ public class GameManager : NetworkBehaviour{
     public GameObject panel;
     public GameObject gameFullPanel;
     public GameObject countdownPanel;
-    public Camera lobbyCamera;
-    //private GameObject[] playerCamera;
+    public GameObject timesUpPanel;
+    public GameObject gameoverPanel;
+    public Text counter;
+    public Text gamecounter;
 
     GameObject[] pc;
-    public Text counter;
-    int timer = 3;
-
-    GameObject player;
+   
+    int timer = 5;
+    int gameTimer = 65; //185 = 3mins
 
     public int playerNum = 0;
 
@@ -55,6 +56,8 @@ public class GameManager : NetworkBehaviour{
         {
             yield return new WaitForSeconds(1);
             timer--;
+            gameTimer--;
+            print(gameTimer);
         }
     }
 
@@ -65,7 +68,19 @@ public class GameManager : NetworkBehaviour{
         StartCoroutine("Countdown");
     }
 
- 
+    [ClientRpc]
+    public void RpcShowLeftTime()
+    {
+        timesUpPanel.SetActive(true);
+    }
+
+    [ClientRpc]
+    public void RpcGameOver()
+    {
+        gameoverPanel.SetActive(true);
+    }
+
+
     void SetCanMove()
     {
         pc = GameObject.FindGameObjectsWithTag("Player");
@@ -80,12 +95,25 @@ public class GameManager : NetworkBehaviour{
     private void Update()
     {
         counter.text = ("" + timer);
+        gamecounter.text = "" + gameTimer;
 
         if (timer <= 0)
         {
             countdownPanel.SetActive(false);
             SetCanMove();
         }
+
+        if (gameTimer <= 60)
+        {
+            RpcShowLeftTime();
+        }
+
+        if(gameTimer == 0)
+        {
+            StopCoroutine("Countdown");
+            RpcGameOver();
+        }
+
     }
 
 

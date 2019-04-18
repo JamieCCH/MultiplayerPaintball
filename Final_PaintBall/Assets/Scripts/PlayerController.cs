@@ -21,7 +21,7 @@ public class PlayerController : NetworkBehaviour {
     public float m_bulletSpeed = 35.0f;
     private float attackCooldownTime = 2.0f;
     private float currentAttackTimer = -1.0f;
-    private float colorChangeBackTime = 2.5f;
+    private float colorChangeBackTime = 1.5f;
     private float currentColorTime = -0.5f;
 
     public Transform m_bulletTransform;
@@ -44,7 +44,7 @@ public class PlayerController : NetworkBehaviour {
         //ChangeColor();
         GetComponent<Renderer>().material.color = m_startingColour;
 
-        Vector3 spawnPos = transform.position + (transform.forward * 5.0f);
+        Vector3 spawnPos = transform.position + (transform.forward * 3.5f);
         GameObject _pickup = Instantiate(pickup, spawnPos, transform.rotation);
         NetworkServer.Spawn(_pickup);
 
@@ -144,7 +144,6 @@ public class PlayerController : NetworkBehaviour {
             GameObject bullet = Instantiate(m_bullet, m_bulletTransform.position, transform.rotation);
             Rigidbody rb = bullet.AddComponent<Rigidbody>();
             rb.velocity = bullet.transform.forward * m_bulletSpeed;
-            //bullet.AddComponent<NetworkIdentity>();
             bullet.GetComponent<Renderer>().material.color = m_startingColour;
             NetworkServer.Spawn(bullet);
             Destroy(bullet, 1.0f);
@@ -213,13 +212,10 @@ public class PlayerController : NetworkBehaviour {
         {
             float moveHorizontal = Input.GetAxis("Horizontal");
             float moveVertical = Input.GetAxis("Vertical");
-
             Vector3 forward = moveVertical * transform.forward * m_speed;
-            Vector3 strafe = moveHorizontal * transform.right * m_speed;
+            Vector3 strafe = moveHorizontal * transform.right;
             m_rb.velocity = forward + strafe;
-
-            //Vector3 movement = new Vector3(moveHorizontal, 0.0f, 1.0f);
-            //transform.rotation = Quaternion.LookRotation(movement);
+            transform.Rotate(0, moveHorizontal, 0);
         }
 
         if(m_isLocalCamera)

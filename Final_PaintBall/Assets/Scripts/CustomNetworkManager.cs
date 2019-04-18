@@ -5,15 +5,14 @@ using UnityEngine.Networking;
 
 public class CustomNetworkManager : NetworkManager {
 
-    int maxPlayerNum = 3;
+    int maxPlayerNum = 3;        //require: 3
     int currentPlayerNum = 0;
-    int connectedNum = 0;
-    int connectedCounts = 0;
     bool isGamefull = false;
     float x;
     float y;
     float z;
     Vector3 pos;
+    Vector3[] posArr;
 
     public GameObject gameManager;
     GameObject StartPanel;
@@ -40,16 +39,6 @@ public class CustomNetworkManager : NetworkManager {
         //};
     }
 
-    void RpcCheckPlayer()
-    {
-        print("RpcCheckPlayer");
-        print("connectedCounts " + connectedCounts);
-        print("connectedNum " + connectedNum);
-
-        gameManager.GetComponent<GameManager>().m_joinButton.gameObject.SetActive(true);
-        
-    }
-
     public override void OnServerConnect(NetworkConnection conn)
     {
         base.OnServerConnect(conn);
@@ -67,6 +56,7 @@ public class CustomNetworkManager : NetworkManager {
     {
         //Debug.Log("colorList" + colorList.Count);
         //Debug.Log("left:"+conn.playerControllers[0].gameObject.GetComponent<PlayerController>().m_startingColour);
+
         var left = conn.playerControllers[0].gameObject.GetComponent<PlayerController>().m_startingColour;
         colorList.Insert(0,left);
 
@@ -80,25 +70,28 @@ public class CustomNetworkManager : NetworkManager {
 
     public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
     {
-        x = Random.Range(-20.0f, 20.0f);
+        //x = Random.Range(-20.0f, 20.0f);
         y = 0.5f;
-        z = Random.Range(-25.0f, 5.0f);
-        pos = new Vector3(x, y, z);
+        //z = Random.Range(-25.0f, 5.0f);
+        //pos = new Vector3(x, y, z);
+       
+        posArr = new[] {
+             new Vector3(0f, y, -22f),
+             new Vector3(-20f, y, 5f),
+             new Vector3(20f, y, -5f),
+             };
 
-        //gameManager.GetComponent<GameManager>().playerCount++;
-        //Debug.Log("server count player: " + gameManager.GetComponent<GameManager>().playerCount);
 
         currentPlayerNum++;
 
         if (currentPlayerNum <= maxPlayerNum)
         {
             isGamefull = false;
-            GameObject player = (GameObject)Instantiate(playerPrefab, pos,transform.rotation);
+            GameObject player = (GameObject)Instantiate(playerPrefab, posArr[currentPlayerNum-1],transform.rotation);
             player.GetComponent<PlayerController>().m_startingColour = colorList[0];
-            //player.GetComponent<PlayerController>().m_score = PlayerScore[colorList[0]];
             colorList.RemoveAt(0);
             NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
-            //player.GetComponent<PlayerController>().scoreTxt.text = "Score: " + PlayerScore[colorList[0]];
+         
             gameManager.GetComponent<GameManager>().RpcCheckPlayerNum();
         }
         else
