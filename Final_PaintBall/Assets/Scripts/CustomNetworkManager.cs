@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 public class CustomNetworkManager : NetworkManager {
 
-    int maxPlayerNum = 2;        //require: 3
+    int maxPlayerNum = 3;        //require: 3
     int currentPlayerNum = 0;
     bool isGamefull = false;
     float x;

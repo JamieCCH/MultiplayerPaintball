@@ -18,7 +18,7 @@ public class GameManager : NetworkBehaviour{
 
     GameObject[] pc;
    
-    int timer = 5;
+    int timer = 3;
     int gameTimer = 185; //185 = 3mins
 
     public int playerNum = 0;
@@ -38,47 +38,49 @@ public class GameManager : NetworkBehaviour{
         };
     }
 
+
     [ClientRpc]
     public void RpcShowScore(Color c, int s)
     {
-        scoreText.text = "" + PlayerScore[c]++;
+        //if (hasAuthority)
+        //{
+            for (var i = 0; i < pc.Length; i++)
+            {
+            //if (hasAuthority)
+            //{
+            var player = pc[i].GetComponent<PlayerController>();
+                if (player.m_startingColour == c && player.hasAuthority)
+                {
+                    scoreText.text = "" + s;
+                    Debug.Log(c + " : " + s);
+                }
+            //}
+
+            }
+        //}
+       
     }
 
     [Command]
-    public void CmdPrintScore(Color c)
+    public void CmdCountScore(Color c)
     {
-        //local
-        scoreText.text = "" + PlayerScore[c]++;
-
-        //broadcast
+        PlayerScore[c]++;
         RpcShowScore(c, PlayerScore[c]);
-        Debug.Log(c + " : " + PlayerScore[c]);
-    }
-
-   
-    public void SetScore(Color c)
-    {
-
-        CmdPrintScore(c);
-
         //pc = GameObject.FindGameObjectsWithTag("Player");
         //for (var i = 0; i < pc.Length; i++)
         //{
-        //    if(pc[i].GetComponent<PlayerController>().m_startingColour == c)
+        //    if (pc[i].GetComponent<PlayerController>().m_startingColour == c)
         //    {
-        //        //var point = 
-        //        pc[i].GetComponent<PlayerController>().m_score++;
-        //        //point++;
+        //        scoreText.text = "" + PlayerScore[c]++;
+        //        //broadcast
 
-        //        //pc[i].GetComponent<PlayerController>().scoreText.text = "" + point;
-
-        //        scoreText.text = "" + pc[i].GetComponent<PlayerController>().m_score;
-
-        //        //CmdPrintScore(c, point);
-
-        //        Debug.Log(c + " : " + pc[i].GetComponent<PlayerController>().m_score);
         //    }
         //}
+    }
+    
+    public void SetScore(Color c)
+    {
+        CmdCountScore(c);
     }
 
     void AddPlayer()
