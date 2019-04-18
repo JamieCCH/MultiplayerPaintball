@@ -15,8 +15,6 @@ public class PlayerController : NetworkBehaviour {
     public bool m_callMove = false;
     public bool m_isLocalCamera = false;
 
-    public int m_score = 0;
-
     public float m_speed = 10.0f;
     public float m_bulletSpeed = 35.0f;
     private float attackCooldownTime = 2.0f;
@@ -29,9 +27,12 @@ public class PlayerController : NetworkBehaviour {
     public GameObject pickup = null;
     public Camera playerCamera = null;
 
+    public int m_score = 0;
 
     [SyncVar]
     public Color m_startingColour;
+    //public Text scoreText;
+   
 
     void Start()
     {
@@ -90,36 +91,6 @@ public class PlayerController : NetworkBehaviour {
         //broadcast
         RpcColor(c);
     }
-
-    //void AddScore(Color c)
-    //{
-    //    var playerColor = GetComponent<Renderer>().material.color;
-
-    //    PlayerScore[c]++;
-
-    //    if (playerColor == c)
-    //    {
-    //        //score++;
-    //        //scoreTxt.text = "Score: " + score;
-    //        scoreTxt.text = "Score: " + PlayerScore[c];
-    //    }
-
-    //    print(c + " : " + PlayerScore[c]);
-    //}
-
-    //[ClientRpc]
-    //void RpcAddScore(Color c)
-    //{
-    //    //local
-    //    //AddScore(c);
-    //}
-
-    //[Command]
-    //void CmdAddScore(Color c)
-    //{
-    //   //AddScore(c);
-    //    //RpcAddScore(c);
-    //}
 
     void Attack()
     {
@@ -210,10 +181,11 @@ public class PlayerController : NetworkBehaviour {
     }
 
     //[Command]
-    void CmdSendBulletColor(Color c)
+    void SendBulletColor(Color c)
     {
         GameManager gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         gm.SetScore(c);
+        //gm.CmdPrintScore(c);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -231,7 +203,7 @@ public class PlayerController : NetworkBehaviour {
             Color col = collision.gameObject.GetComponent<Renderer>().material.color;
             CmdColor(col);
             Destroy(collision.gameObject);
-            CmdSendBulletColor(col);
+            SendBulletColor(col);
         }
     }
 }

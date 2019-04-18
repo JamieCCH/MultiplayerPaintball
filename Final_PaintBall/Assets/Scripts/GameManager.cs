@@ -39,36 +39,46 @@ public class GameManager : NetworkBehaviour{
     }
 
     [ClientRpc]
-    public void RpcPrintScore(Color c, int s)
+    public void RpcShowScore(Color c, int s)
     {
-        pc = GameObject.FindGameObjectsWithTag("Player");
-        for (var i = 0; i < pc.Length; i++)
-        {
-            if (pc[i].GetComponent<PlayerController>().m_startingColour == c)
-            {
-                scoreText.text = ""+s;
-            }
-        }
+        scoreText.text = "" + PlayerScore[c]++;
     }
 
+    [Command]
+    public void CmdPrintScore(Color c)
+    {
+        //local
+        scoreText.text = "" + PlayerScore[c]++;
+
+        //broadcast
+        RpcShowScore(c, PlayerScore[c]);
+        Debug.Log(c + " : " + PlayerScore[c]);
+    }
+
+   
     public void SetScore(Color c)
     {
-        //PlayerScore[c]++;
 
-        pc = GameObject.FindGameObjectsWithTag("Player");
-        for (var i = 0; i < pc.Length; i++)
-        {
-            if(pc[i].GetComponent<PlayerController>().m_startingColour == c)
-            {
-                var point = ++pc[i].GetComponent<PlayerController>().m_score;
-                //point++;
+        CmdPrintScore(c);
 
-                scoreText.text = "" + point;
+        //pc = GameObject.FindGameObjectsWithTag("Player");
+        //for (var i = 0; i < pc.Length; i++)
+        //{
+        //    if(pc[i].GetComponent<PlayerController>().m_startingColour == c)
+        //    {
+        //        //var point = 
+        //        pc[i].GetComponent<PlayerController>().m_score++;
+        //        //point++;
 
-                Debug.Log(c + " : " + point);
-                //RpcPrintScore(c, point);
-            }
-        }
+        //        //pc[i].GetComponent<PlayerController>().scoreText.text = "" + point;
+
+        //        scoreText.text = "" + pc[i].GetComponent<PlayerController>().m_score;
+
+        //        //CmdPrintScore(c, point);
+
+        //        Debug.Log(c + " : " + pc[i].GetComponent<PlayerController>().m_score);
+        //    }
+        //}
     }
 
     void AddPlayer()

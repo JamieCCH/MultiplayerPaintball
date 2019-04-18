@@ -330,9 +330,10 @@ MonoBehaviour:
   m_bulletTransform: {fileID: 4814413795863672}
   m_bullet: {fileID: 1019142427693490, guid: b1121ffd0698c4106925a500052dbfe4, type: 2}
   pickup: {fileID: 1674092276709550, guid: 18e25d623240446beb38ed7a467f7775, type: 2}
-  scoreText: {fileID: 0}
   playerCamera: {fileID: 20339455870684580}
   m_startingColour: {r: 0, g: 0, b: 0, a: 0}
+  scoreText: {fileID: 114124161845730366, guid: 5f1da0cae966a46f3907793ab9a4c31c,
+    type: 2}
 --- !u!114 &114436463238144716
 MonoBehaviour:
   m_ObjectHideFlags: 1

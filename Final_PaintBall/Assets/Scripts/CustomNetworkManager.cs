@@ -22,21 +22,12 @@ public class CustomNetworkManager : NetworkManager {
     Color blue = Color.blue;
 
     List<Color> colorList;
-    Dictionary<Color, int> PlayerScore;
    
-
     public override void OnStartServer()
     {
         base.OnStartServer();
         //Debug.Log("OnStartServer");
         colorList = new List<Color>() { red, green, blue };
-
-        //PlayerScore = new Dictionary<Color, int>
-        //{
-        //    { Color.red, 3 },
-        //    { Color.green, 4 },
-        //    { Color.blue, 0 }
-        //};
     }
 
     public override void OnServerConnect(NetworkConnection conn)
