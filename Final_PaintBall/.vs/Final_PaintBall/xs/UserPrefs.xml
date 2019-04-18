@@ -1,0 +1,29 @@
+﻿<Properties StartupConfiguration="{76CD737D-2B82-68F2-65BC-DE735071C718}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/CustomNetworkManager.cs">
+    <Files>
+      <File FileName="Assets/Scripts/PlayerController.cs" Line="218" Column="5" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="25" Column="16" />
+      <File FileName="Assets/Scripts/CustomNetworkManager.cs" Line="101" Column="36" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Final_PaintBall" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Scripts" expanded="True">
+                <Node name="CustomNetworkManager.cs" selected="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
