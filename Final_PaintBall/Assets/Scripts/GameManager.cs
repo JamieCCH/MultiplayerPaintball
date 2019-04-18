@@ -14,18 +14,61 @@ public class GameManager : NetworkBehaviour{
     public GameObject gameoverPanel;
     public Text counter;
     public Text gamecounter;
+    public Text scoreText;
 
     GameObject[] pc;
    
     int timer = 5;
-    int gameTimer = 65; //185 = 3mins
+    int gameTimer = 185; //185 = 3mins
 
     public int playerNum = 0;
+
+    public Dictionary<Color, int> PlayerScore;
 
     void Start()
     {
         m_joinButton.onClick.AddListener(AddPlayer);
         Time.timeScale = 1;
+
+        PlayerScore = new Dictionary<Color, int>
+        {
+            { Color.red, 0 },
+            { Color.green, 0 },
+            { Color.blue, 0 }
+        };
+    }
+
+    [ClientRpc]
+    public void RpcPrintScore(Color c, int s)
+    {
+        pc = GameObject.FindGameObjectsWithTag("Player");
+        for (var i = 0; i < pc.Length; i++)
+        {
+            if (pc[i].GetComponent<PlayerController>().m_startingColour == c)
+            {
+                scoreText.text = ""+s;
+            }
+        }
+    }
+
+    public void SetScore(Color c)
+    {
+        //PlayerScore[c]++;
+
+        pc = GameObject.FindGameObjectsWithTag("Player");
+        for (var i = 0; i < pc.Length; i++)
+        {
+            if(pc[i].GetComponent<PlayerController>().m_startingColour == c)
+            {
+                var point = ++pc[i].GetComponent<PlayerController>().m_score;
+                //point++;
+
+                scoreText.text = "" + point;
+
+                Debug.Log(c + " : " + point);
+                //RpcPrintScore(c, point);
+            }
+        }
     }
 
     void AddPlayer()
@@ -57,7 +100,7 @@ public class GameManager : NetworkBehaviour{
             yield return new WaitForSeconds(1);
             timer--;
             gameTimer--;
-            print(gameTimer);
+            //print(gameTimer);
         }
     }
 

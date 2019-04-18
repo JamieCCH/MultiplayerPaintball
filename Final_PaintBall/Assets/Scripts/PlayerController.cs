@@ -15,26 +15,23 @@ public class PlayerController : NetworkBehaviour {
     public bool m_callMove = false;
     public bool m_isLocalCamera = false;
 
-    //private int score = 0;
+    public int m_score = 0;
 
     public float m_speed = 10.0f;
     public float m_bulletSpeed = 35.0f;
     private float attackCooldownTime = 2.0f;
     private float currentAttackTimer = -1.0f;
-    private float colorChangeBackTime = 1.5f;
-    private float currentColorTime = -0.5f;
+    private float colorChangeBackTime = 2.0f;
+    private float currentColorTime = -0.25f;
 
     public Transform m_bulletTransform;
     public GameObject m_bullet = null;
     public GameObject pickup = null;
-    public Text scoreTxt = null;
     public Camera playerCamera = null;
 
-    private Dictionary<Color, int> PlayerScore;
 
     [SyncVar]
     public Color m_startingColour;
-    public int m_score; 
 
     void Start()
     {
@@ -47,19 +44,6 @@ public class PlayerController : NetworkBehaviour {
         Vector3 spawnPos = transform.position + (transform.forward * 3.5f);
         GameObject _pickup = Instantiate(pickup, spawnPos, transform.rotation);
         NetworkServer.Spawn(_pickup);
-
-        //scoreTxt = GameObject.Find("ScoreTxt").GetComponent<Text>();
-        //scoreTxt.text = "Score: " + score;
-
-        PlayerScore = new Dictionary<Color, int>
-        {
-            { Color.red, 0 },
-            { Color.green, 0 },
-            { Color.blue, 0 }
-        };
-
-        //scoreTxt.text = "Score: " + PlayerScore[m_startingColour];
-
     }
 
     void ChangeColor(Color c)
@@ -107,35 +91,35 @@ public class PlayerController : NetworkBehaviour {
         RpcColor(c);
     }
 
-    void AddScore(Color c)
-    {
-        var playerColor = GetComponent<Renderer>().material.color;
+    //void AddScore(Color c)
+    //{
+    //    var playerColor = GetComponent<Renderer>().material.color;
 
-        PlayerScore[c]++;
+    //    PlayerScore[c]++;
 
-        if (playerColor == c)
-        {
-            //score++;
-            //scoreTxt.text = "Score: " + score;
-            scoreTxt.text = "Score: " + PlayerScore[c];
-        }
+    //    if (playerColor == c)
+    //    {
+    //        //score++;
+    //        //scoreTxt.text = "Score: " + score;
+    //        scoreTxt.text = "Score: " + PlayerScore[c];
+    //    }
 
-        print(c + " : " + PlayerScore[c]);
-    }
+    //    print(c + " : " + PlayerScore[c]);
+    //}
 
-    [ClientRpc]
-    void RpcAddScore(Color c)
-    {
-        //local
-        //AddScore(c);
-    }
+    //[ClientRpc]
+    //void RpcAddScore(Color c)
+    //{
+    //    //local
+    //    //AddScore(c);
+    //}
 
-    [Command]
-    void CmdAddScore(Color c)
-    {
-       //AddScore(c);
-        //RpcAddScore(c);
-    }
+    //[Command]
+    //void CmdAddScore(Color c)
+    //{
+    //   //AddScore(c);
+    //    //RpcAddScore(c);
+    //}
 
     void Attack()
     {
@@ -223,7 +207,13 @@ public class PlayerController : NetworkBehaviour {
             GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = false;
             playerCamera.enabled = true;
         }
+    }
 
+    //[Command]
+    void CmdSendBulletColor(Color c)
+    {
+        GameManager gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gm.SetScore(c);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -239,10 +229,9 @@ public class PlayerController : NetworkBehaviour {
         {
             //Debug.Log("Player collision w/ Bullet");
             Color col = collision.gameObject.GetComponent<Renderer>().material.color;
-            //ChangeColor(col);
             CmdColor(col);
-            CmdAddScore(col);
             Destroy(collision.gameObject);
+            CmdSendBulletColor(col);
         }
     }
 }
