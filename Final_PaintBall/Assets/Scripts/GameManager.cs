@@ -1,4 +1,9 @@
-﻿using System.Collections;
+//////Jamie Chingchun Huang
+//////101088322
+//////FinalPaintBall
+//////Apr 18, 2019
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -19,7 +24,7 @@ public class GameManager : NetworkBehaviour{
     GameObject[] pc;
    
     int timer = 3;
-    int gameTimer = 185; //185 = 3mins
+    int gameTimer = 183; //183 = 3mins
 
     public int playerNum = 0;
 
@@ -42,23 +47,15 @@ public class GameManager : NetworkBehaviour{
     [ClientRpc]
     public void RpcShowScore(Color c, int s)
     {
-        //if (hasAuthority)
-        //{
-            for (var i = 0; i < pc.Length; i++)
-            {
-            //if (hasAuthority)
-            //{
+        for (var i = 0; i < pc.Length; i++)
+        {
             var player = pc[i].GetComponent<PlayerController>();
-                if (player.m_startingColour == c && player.hasAuthority)
-                {
-                    scoreText.text = "" + s;
-                    Debug.Log(c + " : " + s);
-                }
-            //}
-
+            if (player.m_startingColour == c && player.hasAuthority)
+            {
+                scoreText.text = "" + s;
+                Debug.Log(c + " : " + s);
             }
-        //}
-       
+        }
     }
 
     [Command]
@@ -66,16 +63,6 @@ public class GameManager : NetworkBehaviour{
     {
         PlayerScore[c]++;
         RpcShowScore(c, PlayerScore[c]);
-        //pc = GameObject.FindGameObjectsWithTag("Player");
-        //for (var i = 0; i < pc.Length; i++)
-        //{
-        //    if (pc[i].GetComponent<PlayerController>().m_startingColour == c)
-        //    {
-        //        scoreText.text = "" + PlayerScore[c]++;
-        //        //broadcast
-
-        //    }
-        //}
     }
     
     public void SetScore(Color c)
@@ -112,7 +99,6 @@ public class GameManager : NetworkBehaviour{
             yield return new WaitForSeconds(1);
             timer--;
             gameTimer--;
-            //print(gameTimer);
         }
     }
 
@@ -170,7 +156,5 @@ public class GameManager : NetworkBehaviour{
         }
 
     }
-
-
 
 }

@@ -1,4 +1,9 @@
-﻿using System.Collections;
+//////Jamie Chingchun Huang
+//////101088322
+//////FinalPaintBall
+//////Apr 18, 2019
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -82,7 +87,6 @@ public class CustomNetworkManager : NetworkManager {
             player.GetComponent<PlayerController>().m_startingColour = colorList[0];
             colorList.RemoveAt(0);
             NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
-         
             gameManager.GetComponent<GameManager>().RpcCheckPlayerNum();
         }
         else
@@ -96,10 +100,11 @@ public class CustomNetworkManager : NetworkManager {
         }
 
         var playerCounts = gameManager.GetComponent<GameManager>().playerNum;
-        //print("playerNum " + gameManager.GetComponent<GameManager>().playerNum);
+        print("playerNum " + gameManager.GetComponent<GameManager>().playerNum);
 
         if (isGamefull && playerCounts == 1)
         {
+            print("RpcGameFullNotif");
             gameManager.GetComponent<GameManager>().RpcGameFullNotif();
         }
 

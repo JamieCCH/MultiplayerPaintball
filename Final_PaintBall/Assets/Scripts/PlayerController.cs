@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+//////Jamie Chingchun Huang
+//////101088322
+//////FinalPaintBall
+//////Apr 18, 2019
+
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -17,9 +22,9 @@ public class PlayerController : NetworkBehaviour {
 
     public float m_speed = 10.0f;
     public float m_bulletSpeed = 35.0f;
-    private float attackCooldownTime = 1.0f;
-    private float currentAttackTimer = -1.0f;
-    private float colorChangeBackTime = 1.5f;
+    private float attackCooldownTime = 0.5f;
+    private float currentAttackTimer = -0.25f;
+    private float colorChangeBackTime = 0.5f;
     private float currentColorTime = -0.25f;
 
     public Transform m_bulletTransform;
@@ -28,23 +33,18 @@ public class PlayerController : NetworkBehaviour {
     public Camera playerCamera = null;
     public GameObject glasses = null;
 
-    //public Color myColor;
 
     public int m_score = 0;
 
     [SyncVar]
     public Color m_startingColour;
-    //public Text scoreText;
-   
+
 
     void Start()
     {
-        //playerCamera = GameObject.FindGameObjectWithTag("PlayerCamera").GetComponent<Camera>();
         playerCamera.enabled = false;
         m_rb = GetComponent<Rigidbody>();
-        //ChangeColor();
         GetComponent<Renderer>().material.color = m_startingColour;
-        //myColor = m_startingColour;
         Vector3 spawnPos = transform.position + (transform.forward * 3.5f);
         GameObject _pickup = Instantiate(pickup, spawnPos, transform.rotation);
         NetworkServer.Spawn(_pickup);
@@ -54,7 +54,7 @@ public class PlayerController : NetworkBehaviour {
     {
         if (currentColorTime < 0.0f)
         {
-            glasses.GetComponent<Renderer>().material.color = c;
+            GetComponent<Renderer>().material.color = c;  //glasses
             m_colorchanged = true;
             currentColorTime = colorChangeBackTime;
         }
@@ -67,17 +67,17 @@ public class PlayerController : NetworkBehaviour {
             return;
         }
 
-        Color color = glasses.GetComponent<Renderer>().material.color;
+        Color color = GetComponent<Renderer>().material.color; //glasses
         Vector3 sourceColour = new Vector3(color.r, color.g, color.b);
-        //Vector3 destColour = new Vector3(m_startingColour.r, m_startingColour.g, m_startingColour.b);
-        Vector3 destColour = new Vector3(1.0f, 1.0f, 1.0f);
+        Vector3 destColour = new Vector3(m_startingColour.r, m_startingColour.g, m_startingColour.b);
+        //Vector3 destColour = new Vector3(1.0f, 1.0f, 1.0f); //glasses color
         currentColorTime -= Time.deltaTime;
         float ratio = 1.0f - Mathf.Clamp(currentColorTime / attackCooldownTime, 0.0f, 1.0f);
         Vector3 vColour = Vector3.Lerp(sourceColour, destColour, ratio);
         color.r = vColour.x;
         color.g = vColour.y;
         color.b = vColour.z;
-        glasses.GetComponent<Renderer>().material.color = color;
+        GetComponent<Renderer>().material.color = color;    //glasses
     }
 
     [ClientRpc]
@@ -143,7 +143,6 @@ public class PlayerController : NetworkBehaviour {
        UpdateColor();
     }
 
-    // Every instance of player will be runnning this script
     void Update()
     { 
         if (!hasAuthority)
@@ -184,12 +183,10 @@ public class PlayerController : NetworkBehaviour {
         }
     }
 
-    //[Command]
     void SendBulletColor(Color c)
     {
         GameManager gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         gm.SetScore(c);
-        //gm.CmdCountScore(c);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -206,8 +203,6 @@ public class PlayerController : NetworkBehaviour {
             CmdColor(col);
             Destroy(collision.gameObject);
             SendBulletColor(col);
-            //GameManager gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-            //gm.CmdCountScore(col);
         }
     }
 }
